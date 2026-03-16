@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeo
 # ===================== CONFIGURAÇÃO =====================
 # Login via Facebook
 FACEBOOK_EMAIL = os.environ.get("FACEBOOK_EMAIL", "maiconpode@hotmail.com")
-FACEBOOK_PASS = os.environ.get("FACEBOOK_PASS", "")
+FACEBOOK_PASS = os.environ.get("FACEBOOK_PASS", "Maicon26.")
 SESSION_DIR = os.path.join(os.path.dirname(__file__), ".instagram_session")
 IMAGE_PATH = os.path.join(os.path.dirname(__file__), "post_ia_futuro.png")
 
