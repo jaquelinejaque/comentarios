@@ -46,68 +46,96 @@ A pergunta não é SE a IA vai mudar sua vida, mas COMO você vai usar ela a seu
 """
 
 
+def desenhar_selo_verificado(draw, x, y, tamanho=28):
+    """Desenha o selo de verificação azul do Instagram."""
+    azul = (0, 149, 246)
+    # Círculo azul
+    draw.ellipse([x - tamanho, y - tamanho, x + tamanho, y + tamanho], fill=azul)
+    # Check branco (marca de verificação)
+    check_points = [
+        (x - tamanho * 0.45, y),
+        (x - tamanho * 0.1, y + tamanho * 0.35),
+        (x + tamanho * 0.45, y - tamanho * 0.3),
+    ]
+    draw.line(check_points, fill="white", width=max(4, tamanho // 5))
+
+
 def criar_imagem(output_path="post_ia_futuro.png"):
     """Cria uma imagem 1080x1080 para o post do Instagram."""
     largura, altura = 1080, 1080
-    img = Image.new("RGB", (largura, altura))
+    img = Image.new("RGB", (largura, altura), "white")
     draw = ImageDraw.Draw(img)
 
-    # Fundo gradiente roxo/azul
-    for y in range(altura):
-        r = int(30 + (100 - 30) * y / altura)
-        g = int(0 + (50 - 0) * y / altura)
-        b = int(120 + (200 - 120) * y / altura)
-        draw.line([(0, y), (largura, y)], fill=(r, g, b))
-
-    # Elementos decorativos (circulos)
-    for cx, cy, radius, alpha in [(200, 200, 80, 60), (880, 300, 60, 40),
-                                   (500, 800, 100, 50), (150, 700, 40, 30),
-                                   (900, 750, 70, 45)]:
-        draw.ellipse([cx - radius, cy - radius, cx + radius, cy + radius],
-                     outline=(255, 255, 255, alpha), width=2)
-
-    # Texto
+    # Fontes
     try:
+        font_nome = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 38)
         font_titulo = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 52)
         font_sub = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 32)
         font_rodape = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
+        font_via = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 28)
     except OSError:
-        font_titulo = ImageFont.load_default()
-        font_sub = font_titulo
-        font_rodape = font_titulo
+        font_nome = ImageFont.load_default()
+        font_titulo = font_nome
+        font_sub = font_nome
+        font_rodape = font_nome
+        font_via = font_nome
 
-    # Título
+    # === Nome + Selo de verificação no topo ===
+    nome = "Pri Brand"
+    nome_bbox = draw.textbbox((0, 0), nome, font=font_nome)
+    nome_w = nome_bbox[2] - nome_bbox[0]
+    nome_x = (largura - nome_w) // 2 - 20  # deslocar um pouco pra esquerda pro selo caber
+    nome_y = 60
+    draw.text((nome_x, nome_y), nome, fill=(30, 30, 30), font=font_nome)
+
+    # Selo de verificação azul ao lado do nome
+    selo_x = nome_x + nome_w + 22
+    selo_y = nome_y + 18
+    desenhar_selo_verificado(draw, selo_x, selo_y, tamanho=18)
+
+    # Linha separadora fina abaixo do nome
+    draw.line([(100, 120), (980, 120)], fill=(220, 220, 220), width=2)
+
+    # === Título ===
+    cor_texto = (30, 30, 30)
+    cor_destaque = (0, 120, 215)
+
     titulo = "O FUTURO DA"
     titulo2 = "INTELIGÊNCIA"
     titulo3 = "ARTIFICIAL"
 
-    draw.text((540, 200), titulo, fill="white", font=font_titulo, anchor="mm")
-    draw.text((540, 270), titulo2, fill="white", font=font_titulo, anchor="mm")
-    draw.text((540, 340), titulo3, fill=(0, 220, 255), font=font_titulo, anchor="mm")
+    draw.text((540, 200), titulo, fill=cor_texto, font=font_titulo, anchor="mm")
+    draw.text((540, 270), titulo2, fill=cor_texto, font=font_titulo, anchor="mm")
+    draw.text((540, 340), titulo3, fill=cor_destaque, font=font_titulo, anchor="mm")
 
     # Separador
-    draw.line([(340, 400), (740, 400)], fill=(0, 220, 255), width=3)
+    draw.line([(340, 400), (740, 400)], fill=cor_destaque, width=3)
 
-    # Tópicos
+    # === Tópicos ===
     topicos = [
-        "🔮 IA Generativa Avançada",
-        "🤖 Agentes Autônomos",
-        "🏥 IA na Saúde",
-        "⚙️ Robótica Inteligente",
-        "📋 IA Ética e Regulamentada",
+        "IA Generativa Avancada",
+        "Agentes Autonomos",
+        "IA na Saude",
+        "Robotica Inteligente",
+        "IA Etica e Regulamentada",
     ]
+    marcadores = ["1.", "2.", "3.", "4.", "5."]
     y_pos = 460
-    for topico in topicos:
-        draw.text((540, y_pos), topico, fill="white", font=font_sub, anchor="mm")
+    for i, topico in enumerate(topicos):
+        texto = f"{marcadores[i]}  {topico}"
+        draw.text((540, y_pos), texto, fill=cor_texto, font=font_sub, anchor="mm")
         y_pos += 60
 
-    # Rodapé
-    draw.text((540, 920), "O futuro é agora. Prepare-se! 🚀",
-              fill=(0, 220, 255), font=font_rodape, anchor="mm")
+    # === "via Pri Brand" no rodapé ===
+    draw.text((540, 880), "via Pri Brand", fill=(130, 130, 130), font=font_via, anchor="mm")
 
-    # Borda
+    # Frase final
+    draw.text((540, 940), "O futuro e agora. Prepare-se!",
+              fill=cor_destaque, font=font_rodape, anchor="mm")
+
+    # Borda sutil
     draw.rectangle([10, 10, largura - 10, altura - 10],
-                   outline=(0, 220, 255), width=2)
+                   outline=cor_destaque, width=2)
 
     img.save(output_path, "PNG")
     print(f"Imagem criada: {output_path}")
